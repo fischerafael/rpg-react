@@ -1,5 +1,7 @@
+import { HomePage } from "../src/pages/HomePage";
+
 const index = () => {
-  return <div>home</div>;
+  return <HomePage />;
 };
 
 export default index;
