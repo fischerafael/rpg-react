@@ -6,7 +6,7 @@ export const HomePage = () => {
   const [char, setChar] = useState({
     x: 1,
     y: 5,
-    direction: "up",
+    direction: "bottom",
     name: "Antedeguemon",
   } as IChar);
 

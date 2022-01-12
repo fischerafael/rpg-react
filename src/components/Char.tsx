@@ -8,6 +8,15 @@ export const Char = ({ char }: Props) => {
   const posX = char.x * 30;
   const posY = char.y * 30;
 
+  const backgroundPosition =
+    char.direction === "top"
+      ? 30
+      : char.direction === "right"
+      ? 60
+      : char.direction === "bottom"
+      ? 120
+      : 90;
+
   return (
     <div
       style={{
@@ -17,6 +26,7 @@ export const Char = ({ char }: Props) => {
         position: "absolute",
         left: `${posX}px`,
         top: `${posY}px`,
+        backgroundPosition: `0 ${backgroundPosition}px`,
       }}
     >
       <div

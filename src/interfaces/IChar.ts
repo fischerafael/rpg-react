@@ -1,6 +1,6 @@
 export interface IChar {
   x: number;
   y: number;
-  direction: string;
+  direction: "top" | "bottom" | "left" | "right";
   name: string;
 }
