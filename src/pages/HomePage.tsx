@@ -1,14 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Char } from "../components/Char";
 import { IChar } from "../interfaces/IChar";
 
 export const HomePage = () => {
   const [char, setChar] = useState({
-    x: 1,
+    x: 5,
     y: 5,
     direction: "bottom",
     name: "Antedeguemon",
   } as IChar);
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyPress);
+  }, []);
+
+  const onKeyPress = (e: KeyboardEvent) => {
+    if (!e) return;
+
+    if (e.code === "ArrowUp") {
+      setChar((prev) => ({ ...prev, y: prev.y - 1, direction: "top" }));
+      return;
+    }
+
+    if (e.code === "ArrowDown") {
+      if (char.x > 12) return;
+
+      setChar((prev) => ({ ...prev, y: prev.y + 1, direction: "bottom" }));
+      return;
+    }
+
+    if (e.code === "ArrowRight") {
+      setChar((prev) => ({ ...prev, x: prev.x + 1, direction: "right" }));
+      return;
+    }
+
+    if (e.code === "ArrowLeft") {
+      setChar((prev) => ({ ...prev, x: prev.x - 1, direction: "left" }));
+      return;
+    }
+  };
 
   return (
     <div
