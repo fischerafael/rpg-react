@@ -1,41 +1,65 @@
 import { useEffect, useState } from "react";
 import { Char } from "../components/Char";
+import { mapPoints } from "../data/mapPoints";
 import { IChar } from "../interfaces/IChar";
 
 export const HomePage = () => {
-  const [char, setChar] = useState({
-    x: 5,
-    y: 5,
-    direction: "bottom",
-    name: "Antedeguemon",
-  } as IChar);
-
   useEffect(() => {
     window.addEventListener("keydown", onKeyPress);
   }, []);
 
-  const onKeyPress = (e: KeyboardEvent) => {
-    if (!e) return;
+  const [char, setChar] = useState({
+    x: 1,
+    y: 2,
+    direction: "bottom",
+    name: "Antedeguemon",
+  } as IChar);
 
+  const [isAllowed, setAllowed] = useState(false);
+
+  console.log("char pos", char.x, char.y);
+  console.log("is allowed", isAllowed);
+
+  const moveTop = () => {
+    setChar((prev) => ({ ...prev, y: prev.y - 1, direction: "top" }));
+  };
+  const moveBottom = () => {
+    setChar((prev) => ({ ...prev, y: prev.y + 1, direction: "bottom" }));
+  };
+  const moveRight = () => {
+    setChar((prev) => ({ ...prev, x: prev.x + 1, direction: "right" }));
+  };
+  const moveLeft = () => {
+    setChar((prev) => ({ ...prev, x: prev.x - 1, direction: "left" }));
+  };
+
+  useEffect(() => {
+    const mapValue = getMapValue(char);
+    if (!mapValue) {
+      setAllowed(false);
+      return;
+    }
+    setAllowed(true);
+  }, [char]);
+
+  const onKeyPress = (e: KeyboardEvent) => {
     if (e.code === "ArrowUp") {
-      setChar((prev) => ({ ...prev, y: prev.y - 1, direction: "top" }));
+      moveTop();
       return;
     }
 
     if (e.code === "ArrowDown") {
-      if (char.x > 12) return;
-
-      setChar((prev) => ({ ...prev, y: prev.y + 1, direction: "bottom" }));
+      moveBottom();
       return;
     }
 
     if (e.code === "ArrowRight") {
-      setChar((prev) => ({ ...prev, x: prev.x + 1, direction: "right" }));
+      moveRight();
       return;
     }
 
     if (e.code === "ArrowLeft") {
-      setChar((prev) => ({ ...prev, x: prev.x - 1, direction: "left" }));
+      moveLeft();
       return;
     }
   };
@@ -66,4 +90,10 @@ export const HomePage = () => {
       </div>
     </div>
   );
+};
+
+const getMapValue = (char: IChar) => {
+  if (char.x < 0) return;
+  if (char.y < 0) return;
+  return mapPoints[char.y][char.x];
 };
