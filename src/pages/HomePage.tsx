@@ -4,10 +4,6 @@ import { mapPoints } from "../data/mapPoints";
 import { IChar } from "../interfaces/IChar";
 
 export const HomePage = () => {
-  useEffect(() => {
-    window.addEventListener("keydown", onKeyPress);
-  }, []);
-
   const [char, setChar] = useState({
     x: 1,
     y: 2,
@@ -15,26 +11,17 @@ export const HomePage = () => {
     name: "Antedeguemon",
   } as IChar);
 
-  const [isAllowed, setAllowed] = useState(false);
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyPress);
+    return () => window.removeEventListener("keydown", onKeyPress);
+  }, []);
 
-  console.log("char pos", char.x, char.y);
-  console.log("is allowed", isAllowed);
+  const [isAllowed, setAllowed] = useState(true);
 
-  const moveTop = () => {
-    setChar((prev) => ({ ...prev, y: prev.y - 1, direction: "top" }));
-  };
-  const moveBottom = () => {
-    setChar((prev) => ({ ...prev, y: prev.y + 1, direction: "bottom" }));
-  };
-  const moveRight = () => {
-    setChar((prev) => ({ ...prev, x: prev.x + 1, direction: "right" }));
-  };
-  const moveLeft = () => {
-    setChar((prev) => ({ ...prev, x: prev.x - 1, direction: "left" }));
-  };
+  console.log("char pos", char.x, char.y, isAllowed);
 
   useEffect(() => {
-    const mapValue = getMapValue(char);
+    const mapValue = canGo(char);
     if (!mapValue) {
       setAllowed(false);
       return;
@@ -43,25 +30,61 @@ export const HomePage = () => {
   }, [char]);
 
   const onKeyPress = (e: KeyboardEvent) => {
-    if (e.code === "ArrowUp") {
+    const { code } = e;
+
+    if (code === "ArrowUp") {
+      if (!isPossible(char.x, char.y)) return;
       moveTop();
       return;
     }
 
-    if (e.code === "ArrowDown") {
+    if (code === "ArrowDown") {
       moveBottom();
       return;
     }
 
-    if (e.code === "ArrowRight") {
+    if (code === "ArrowRight") {
       moveRight();
       return;
     }
 
-    if (e.code === "ArrowLeft") {
+    if (code === "ArrowLeft") {
       moveLeft();
       return;
     }
+  };
+
+  // const moveUp = (y: number, x: number) => {
+  //   isPossible(y, x) ? ;
+  // };
+
+  const moveTop = () => {
+    setChar((prev) => ({
+      ...prev,
+      y: prev.y - 1,
+      direction: "top",
+    }));
+  };
+  const moveBottom = () => {
+    setChar((prev) => ({
+      ...prev,
+      y: canGo(prev) ? prev.y + 1 : prev.y,
+      direction: "bottom",
+    }));
+  };
+  const moveRight = () => {
+    setChar((prev) => ({
+      ...prev,
+      x: canGo(prev) ? prev.x + 1 : prev.x,
+      direction: "right",
+    }));
+  };
+  const moveLeft = () => {
+    setChar((prev) => ({
+      ...prev,
+      x: canGo(prev) ? prev.x - 1 : prev.x,
+      direction: "left",
+    }));
   };
 
   return (
@@ -92,8 +115,21 @@ export const HomePage = () => {
   );
 };
 
-const getMapValue = (char: IChar) => {
-  if (char.x < 0) return;
-  if (char.y < 0) return;
-  return mapPoints[char.y][char.x];
+const checkIfCanGo = (char: IChar) => {
+  if (canGo(char)) return char.y - 1;
+  return char.y;
+};
+
+const canGo = (char: IChar) => {
+  if (char.x < 0) return false;
+  if (char.y < 0) return false;
+  if (!mapPoints[char.y][char.x]) return false;
+  return true;
+};
+
+const isPossible = (x: number, y: number) => {
+  if (x < 0) return false;
+  if (y < 0) return false;
+  if (!mapPoints[y][x]) return false;
+  return true;
 };
